@@ -1,5 +1,0 @@
-
-
-
-def chat():
-    pass

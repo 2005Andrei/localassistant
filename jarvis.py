@@ -11,9 +11,6 @@ import threading
 import time
 import sys
 
-from interface.startUI import animate
-from core.chat import chat
-
 '''
 1) check for ollama
 2) run animation
@@ -22,7 +19,6 @@ from core.chat import chat
 '''
 
 # Global variables
-
 process: Optional[subprocess.Popen] = None
 log_file_handle: Optional[object] = None
 log_file_path: Optional[str] = None
@@ -57,7 +53,7 @@ def setup_logging() -> str:
         log_file_path = f"./.log/ollama_requests_{int(time.time())}.log"
         
         with open(log_file_path, "w") as f:
-            pass  # Create empty file
+            pass
         
         print(f"[+] Log file created at {log_file_path}")
         return log_file_path
@@ -172,12 +168,20 @@ def signal_handler(signum, frame):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
+def start_new():
+    try:
+        if sys.platform.startswith("win"):
+            cmd = ["start", "cmd", "\k", "python", "core/setup.py"]
+            ui_process = subprocess.Popen(cmd, shell=True)
+        else:
+            print("I'm on windows at the moment, will change for linux and macos when I have the time")
+
 if __name__=="__main__":
     try:
         run_ollama()
 
-        print("[+] Ollama is serving. Ctrl c stops the serving.")
-        
+        print("[+] Ollama is serving. Ctrl c stops the program.")
+        start_new()
         while True:
             time.sleep(1)
 
@@ -191,5 +195,3 @@ if __name__=="__main__":
     #startapi() --> start logging
     #           --> save that in a file
     #           --> open new window for seeing requests up to the users wishes
-    
-    chat() #not yet implemented
