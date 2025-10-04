@@ -1,7 +1,7 @@
 import os
 import threading
 import time
-
+import requests
 
 class PromptPipeline():
     def __init__(self, request):
@@ -47,15 +47,48 @@ class PromptPipeline():
         self._stop_event.set()
         self.thread.join()
 
-
+import requests
+import json
 
 class MidPoint: # between stt and tts
     def __init__(self, tts):
         self.tts = tts
+        self.url = "http://localhost:11434/api/generate"
+        self.model = "butler-code" # my model I set up - when this repo gets sufficiently good I'll write a comprehnsive readme for any lost soul so that you don't have to know anything prior
+    
+    def send(self, data):
+        if len(data) > 1:
+            prompt = '... '.join(data)
+        else:
+            prompt = data[0]
+        
+        print("Prompt: ", prompt)
 
-    def send(data):
-        #process texrt
-        # do a curl request
-        # get data - and then call tts.say()
+        payload = {
+            "model": self.model,
+            "prompt": prompt
+        }
 
         
+        full_response = []
+
+        with requests.post(self.url, json=payload, stream=True) as response:
+            if response.status_code == 200:
+                for line in response.iter_lines():
+                    if line:
+                        data = json.loads(line.decode('utf-8'))
+                        if 'response' in data:
+                            full_response += data['response']
+                        if data.get('done'):
+                            break
+            else:
+                print("Error: ", response.text)
+                return
+
+        sentence = ''.join(full_response)
+        print("heeey over heere")
+        self.tts.say(sentence)
+
+    def close():
+        print("idk just closing")
+        return True

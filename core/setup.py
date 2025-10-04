@@ -97,11 +97,30 @@ class STT:
         finally:
             self.cleanup()
 
+import numpy as np
+import sounddevice as sd
+from kokoro_onnx import Kokoro
+from kokoro_onnx.config import SAMPLE_RATE
 
-class TSS:
+class TTS:
     def __init__(self):
-        
+        self.onnx = "./core/kokoro-v1.0.onnx"
+        self.voices = "./core/voices-v1.0.bin"
+        self.kokoro = Kokoro(self.onnx, self.voices)
+        self.voice = "am_santa"
 
-#if __name__ == "__main__":
-#    stt = STT()
-#    stt.run()
+        # I'll modify this to list and choose whatever voice you'd like
+
+        print("Text to speech module should be initialized")
+        
+    def say(self, text):
+
+        print(f"Response: {text}")
+
+        sample, sample_rate = self.kokoro.create(text, voice=self.voice, speed=1.0)
+
+        sd.play(sample, sample_rate)
+
+        sd.wait()
+
+

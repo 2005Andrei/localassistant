@@ -177,14 +177,15 @@ if __name__=="__main__":
         print("[+] Ollama should work")
 
         from core.setup import STT
+        from core.setup import TTS
         from core.client import PromptPipeline
-
-        while True:
-            time.sleep(1)
-
-        #stt_pipeline = PromptPipeline()
-        #stt = STT(stt_pipeline)
-        #stt.run()
+        from core.client import MidPoint
+    
+        tss = TTS()
+        mdp = MidPoint(tss)
+        stt_pipeline = PromptPipeline(mdp)
+        stt = STT(stt_pipeline)
+        stt.run()
 
 
     except KeyboardInterrupt:
