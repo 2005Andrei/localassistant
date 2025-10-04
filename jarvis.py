@@ -144,7 +144,7 @@ def cleanup_ollama():
 
         stream_thread.join(timeout=2)
         if stream_thread.is_alive():
-            print("[-] Stream thread survived. You: 0, Thread: 1")
+            print("[-] Stream thread survived")
 
     log_file_path = None
     stream_thread = None
@@ -168,30 +168,29 @@ def signal_handler(signum, frame):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-def start_new():
-    try:
-        if sys.platform.startswith("win"):
-            cmd = ["start", "cmd", "\k", "python", "core/setup.py"]
-            ui_process = subprocess.Popen(cmd, shell=True)
-        else:
-            print("I'm on windows at the moment, will change for linux and macos when I have the time")
+
 
 if __name__=="__main__":
     try:
         run_ollama()
 
-        print("[+] Ollama is serving. Ctrl c stops the program.")
-        start_new()
+        print("[+] Ollama should work")
+
+        from core.setup import STT
+        from core.client import PromptPipeline
+
         while True:
             time.sleep(1)
 
+        #stt_pipeline = PromptPipeline()
+        #stt = STT(stt_pipeline)
+        #stt.run()
+
+
     except KeyboardInterrupt:
-        print("[!] Exiting serving. Exiting Georging. See you next time")
+        print("[!] Exiting. See you next time")
     except Exception as e:
         print(f"[-] Oh no: {e}")
     finally:
         cleanup_ollama()
 
-    #startapi() --> start logging
-    #           --> save that in a file
-    #           --> open new window for seeing requests up to the users wishes
